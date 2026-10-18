@@ -8,12 +8,46 @@ import {
   SidebarHeader,
   SidebarTrigger,
   useSidebar,
+  SidebarRail,
+  SidebarGroupLabel,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import ThemeToggle from "./theme-toggle";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { PanelLeft } from "lucide-react";
+import {
+  CalendarDays,
+  ClipboardCheck,
+  FolderKanban,
+  LayoutDashboard,
+  PanelLeft,
+  Plus,
+  Settings,
+  Users,
+} from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+
+const links = [
+  {
+    name: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "Attendance",
+    url: "/attendance",
+    icon: ClipboardCheck,
+  },
+  {
+    name: "Leave",
+    url: "/leave",
+    icon: CalendarDays,
+  },
+];
 
 export function AppSidebar() {
   const { resolvedTheme } = useTheme();
@@ -82,12 +116,26 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup />
-        <SidebarGroup />
+      <SidebarContent className="pt-4">
+        <SidebarGroup>
+          <SidebarGroupLabel>Modules</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {links.map((link) => (
+                <SidebarMenuItem key={link.name}>
+                  <SidebarMenuButton render={<Link href={link.url} />}>
+                    <link.icon />
+                    <span>{link.name}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter></SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
