@@ -197,7 +197,7 @@ export function AppSidebar() {
                     <UserRound />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem render={<Link href="/settings" />}>
                     <Settings />
                     Settings
                   </DropdownMenuItem>
