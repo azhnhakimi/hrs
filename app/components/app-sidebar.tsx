@@ -21,15 +21,25 @@ import { useTheme } from "next-themes";
 import {
   CalendarDays,
   ClipboardCheck,
-  FolderKanban,
   LayoutDashboard,
   PanelLeft,
-  Plus,
+  ChevronsUpDown,
+  LogOut,
   Settings,
-  Users,
+  UserRound,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const links = [
   {
@@ -134,7 +144,77 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter></SidebarFooter>
+      <SidebarFooter className="border-t border-border">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:cursor-pointer"
+                  >
+                    <Avatar className="size-8 rounded-lg">
+                      <AvatarImage
+                        src="https://github.com/shadcn.png"
+                        alt="@shadcn"
+                      />
+                      <AvatarFallback>A</AvatarFallback>
+                    </Avatar>
+
+                    <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                      <span className="truncate font-medium">Aori</span>
+                      <span className="truncate text-xs font-light text-muted-foreground">
+                        aori@gmail.com
+                      </span>
+                    </div>
+
+                    <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+                  </SidebarMenuButton>
+                }
+              />
+              <DropdownMenuContent
+                side="top"
+                align="end"
+                sideOffset={8}
+                className="min-w-56"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium">Aori</span>
+                      <span className="text-xs text-muted-foreground">
+                        aori@gmail.com
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <UserRound />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings />
+                    Settings
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem variant="destructive">
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
