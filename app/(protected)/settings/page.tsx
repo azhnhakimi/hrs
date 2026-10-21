@@ -10,7 +10,7 @@ const SettingsPage = () => {
             Manage your account preferences and customize your experience.
           </h2>
         </div>
-        <div className="mt-8 w-full">
+        <div className="mt-8 w-full"> 
           <p className="text-xs text-foreground font-bold">APPEARANCE</p>
           <div className="flex justify-between items-center w-full">
             <p className="text-lg font-medium text-foreground">Theme</p>

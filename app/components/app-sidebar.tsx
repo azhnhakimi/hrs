@@ -128,7 +128,7 @@ export function AppSidebar() {
 
       <SidebarContent className="pt-4">
         <SidebarGroup>
-          <SidebarGroupLabel>Modules</SidebarGroupLabel>
+          <SidebarGroupLabel>WORKSPACE</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {links.map((link) => (
