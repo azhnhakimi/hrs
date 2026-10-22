@@ -1,9 +1,44 @@
-import { Calendar, CircleCheck, Clock, LogOut } from "lucide-react";
+"use client";
+
+import {
+  Calendar,
+  ChevronDown,
+  CircleCheck,
+  Clock,
+  LogOut,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import AttendanceTable from "@/app/components/tables/attendance-table";
+import { months } from "@/app/constants/month";
+import { useState, useEffect } from "react";
+import {
+  getCurrentMonth,
+  getCurrentYear,
+  getLastFiveYears,
+} from "@/app/constants/month";
 
 const AttendancePage = () => {
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [years, setYears] = useState<number[]>([]);
+
+  useEffect(() => {
+    setSelectedMonth(getCurrentMonth());
+
+    const currentYear = getCurrentYear();
+    setSelectedYear(currentYear);
+    setYears(getLastFiveYears());
+  }, []);
+
   return (
     <div className="bg-background transition-colors duration-300 ease-in-out flex flex-1 min-h-screen w-full justify-center items-center">
-      <main className="w-full max-w-5xl min-h-screen py-6 flex flex-col justify-start items-center gap-6">
+      <main className="w-full max-w-5xl min-h-screen py-6 flex flex-col justify-start gap-6">
         <div className="w-full">
           <p className="text-3xl font-bold">Attendance</p>
           <p className="text-lg text-muted-foreground">
@@ -68,6 +103,60 @@ const AttendancePage = () => {
             <p className="text-3xl font-bold">142 h</p>
           </div>
         </div>
+
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-2xl font-semibold mt-4">Attendance history</p>
+
+          <div className="flex flex-row gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <button className="bg-surface border-2 border-border pl-4 pr-3 py-2 rounded-lg flex flex-row justify-center items-center gap-3 hover:cursor-pointer">
+                    <p>{selectedMonth}</p>
+                    <ChevronDown />
+                  </button>
+                }
+              />
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  {months.map((month, idx) => (
+                    <DropdownMenuItem
+                      key={idx}
+                      onClick={() => setSelectedMonth(month)}
+                    >
+                      {month}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <button className="bg-surface border-2 border-border pl-4 pr-3 py-2 rounded-lg flex flex-row justify-center items-center gap-3 hover:cursor-pointer">
+                    <p>{selectedYear ?? "Select year"}</p>
+                    <ChevronDown />
+                  </button>
+                }
+              />
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  {years.map((year) => (
+                    <DropdownMenuItem
+                      key={year}
+                      onClick={() => setSelectedYear(year)}
+                    >
+                      {year}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        <AttendanceTable />
       </main>
     </div>
   );
