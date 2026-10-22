@@ -27,6 +27,7 @@ import {
   LogOut,
   Settings,
   UserRound,
+  Bell,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -56,6 +57,11 @@ const links = [
     name: "Leave",
     url: "/leave",
     icon: CalendarDays,
+  },
+  {
+    name: "Notifications",
+    url: "/notifications",
+    icon: Bell,
   },
 ];
 
