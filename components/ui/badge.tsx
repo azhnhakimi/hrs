@@ -20,6 +20,8 @@ const badgeVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         success:
           "bg-green-500/10 text-green-700 focus-visible:ring-green-500/20 dark:bg-green-500/20 dark:text-green-400 dark:focus-visible:ring-green-500/40 [a]:hover:bg-green-500/20",
+        pending:
+          "bg-amber-500/10 text-amber-700 focus-visible:ring-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400 dark:focus-visible:ring-amber-500/40 [a]:hover:bg-amber-500/20",
       },
     },
     defaultVariants: {
