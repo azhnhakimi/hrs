@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AppSidebar } from "../components/app-sidebar";
 
 export default function ProtectedLayout({
@@ -7,7 +8,11 @@ export default function ProtectedLayout({
 }) {
   return (
     <div className="flex min-h-screen w-full justify-center items-center">
-      <AppSidebar />
+      <Suspense
+        fallback={<div className="w-[var(--sidebar-width)] shrink-0" />}
+      >
+        <AppSidebar />
+      </Suspense>
       <main className="flex-1 w-full">{children}</main>
     </div>
   );

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -9,11 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 import { leaveRecords } from "@/app/mock_data/leave";
-import { EllipsisVertical } from "lucide-react";
 
 const LeaveTable = () => {
+  const router = useRouter();
+
   return (
     <Table className="w-full table-fixed">
       <TableHeader className="bg-table-header">
@@ -25,13 +29,23 @@ const LeaveTable = () => {
           <TableHead className="w-[14%] text-center">Approval Status</TableHead>
           <TableHead className="w-[12%]">Approver</TableHead>
           <TableHead className="w-[18%]">Approver Comments</TableHead>
-          <TableHead className="w-[8%] text-center">Actions</TableHead>
         </TableRow>
       </TableHeader>
 
       <TableBody>
         {leaveRecords.map((record, idx) => (
-          <TableRow key={idx}>
+          <TableRow
+            key={record.id}
+            className="cursor-pointer"
+            onClick={() => router.push(`/leave/requests/${record.id}`)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                router.push(`/leave/requests/${record.id}`);
+              }
+            }}
+            tabIndex={0}
+            role="link"
+          >
             <TableCell className="truncate font-medium">
               {record.leaveType}
             </TableCell>
@@ -63,11 +77,6 @@ const LeaveTable = () => {
             </TableCell>
             <TableCell className="truncate font-medium">
               {record.approverComments ?? "N/A"}
-            </TableCell>
-            <TableCell className="text-center">
-              <button className="hover:cursor-pointer">
-                <EllipsisVertical className="size-5" />
-              </button>
             </TableCell>
           </TableRow>
         ))}

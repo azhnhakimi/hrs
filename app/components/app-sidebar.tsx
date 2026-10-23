@@ -139,7 +139,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>WORKSPACE</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-2">
+            <SidebarMenu className="gap-1">
               {links.map((link) => {
                 const isActive = pathname === link.url;
 
