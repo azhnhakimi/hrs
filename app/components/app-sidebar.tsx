@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -73,6 +74,8 @@ export function AppSidebar() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const pathname = usePathname();
 
   if (!mounted) return null;
 
@@ -136,15 +139,26 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>WORKSPACE</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {links.map((link) => (
-                <SidebarMenuItem key={link.name}>
-                  <SidebarMenuButton render={<Link href={link.url} />}>
-                    <link.icon />
-                    <span>{link.name}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="gap-2">
+              {links.map((link) => {
+                const isActive = pathname === link.url;
+
+                return (
+                  <SidebarMenuItem key={link.name}>
+                    <SidebarMenuButton
+                      render={<Link href={link.url} />}
+                      className={
+                        isActive
+                          ? "bg-foreground text-background hover:bg-foreground/90 hover:text-background"
+                          : ""
+                      }
+                    >
+                      <link.icon />
+                      <span>{link.name}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
