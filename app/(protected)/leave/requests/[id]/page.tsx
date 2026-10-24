@@ -90,9 +90,9 @@ async function LeaveDetails({ params }: LeaveDetailsPageProps) {
           <p className="font-semibold">{record.approverComments ?? "-"}</p>
         </div>
         {record.approvalStatus === "Approved" && (
-          <button className="w-full py-3 flex flex-row justify-center items-center gap-2 bg-foreground hover:cursor-pointer rounded-xl mt-6">
-            <X className="text-background" />
-            <p className="font-semibold text-background">Cancel request</p>
+          <button className="w-full py-3 flex flex-row justify-center items-center gap-2 bg-red-800 hover:bg-red-900 text-white hover:cursor-pointer rounded-2xl mt-6 transition-colors">
+            <X className="text-white" />
+            <p className="font-semibold text-white">Cancel request</p>
           </button>
         )}
       </div>

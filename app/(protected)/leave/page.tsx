@@ -1,9 +1,10 @@
 import LeaveBalanceTable from "@/app/components/tables/leave-balance-table";
 import LeaveUpcomingCard from "@/app/components/leave-upcoming-card";
 import { Plus } from "lucide-react";
+import LeaveTable from "@/app/components/tables/leave-table";
+import Link from "next/link";
 
 import { leaveRecords } from "@/app/mock_data/leave";
-import LeaveTable from "@/app/components/tables/leave-table";
 
 const LeavePage = () => {
   return (
@@ -21,10 +22,13 @@ const LeavePage = () => {
           <div className="flex-2 p-6 border-2 border-border bg-surface rounded-xl flex gap-6 flex-col">
             <p className="font-semibold text-lg">Leave Balance Overview</p>
             <LeaveBalanceTable />
-            <button className="flex justify-center items-center gap-2 w-full py-2 bg-foreground rounded-lg mt-auto hover:cursor-pointer">
+            <Link
+              href={"/leave/apply"}
+              className="flex justify-center items-center gap-2 w-full py-2 bg-foreground rounded-lg mt-auto hover:cursor-pointer"
+            >
               <Plus className="text-background" />
               <p className="text-background font-semibold">Request Leave</p>
-            </button>
+            </Link>
           </div>
 
           <div className="flex-1 p-6 border-2 border-border bg-surface rounded-xl flex gap-4 flex-col h-85">
