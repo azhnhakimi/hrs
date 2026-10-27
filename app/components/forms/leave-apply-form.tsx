@@ -98,7 +98,7 @@ const LeaveApplyForm = () => {
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="w-full h-full"
+              className="w-full h-full aspect-square"
             />
           </PopoverContent>
         </Popover>

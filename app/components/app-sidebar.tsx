@@ -28,6 +28,7 @@ import {
   Settings,
   UserRound,
   Bell,
+  Calendar,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -58,6 +59,11 @@ const links = [
     name: "Leave",
     url: "/leave",
     icon: CalendarDays,
+  },
+  {
+    name: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
   },
   {
     name: "Notifications",
