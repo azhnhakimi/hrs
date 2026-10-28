@@ -21,7 +21,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarEvent } from "../constants/calendar";
+import { CalendarEvent, EventSegment } from "../constants/calendar";
+import CalendarEventLabel from "./calendar-event-label";
 
 function AppCalendar({
   className,
@@ -40,31 +41,60 @@ function AppCalendar({
 }) {
   const defaultClassNames = getDefaultClassNames();
 
+  const startOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
   const toDayKey = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
   const eventsByDay = React.useMemo(() => {
-    const map = new Map<string, CalendarEvent[]>();
-    for (const event of events) {
-      const cursor = new Date(
-        event.start.getFullYear(),
-        event.start.getMonth(),
-        event.start.getDate(),
+    const weekStart = props.weekStartsOn ?? locale?.options?.weekStartsOn ?? 0;
+    const sorted = [...events].sort((a, b) => {
+      const byStart = a.start.getTime() - b.start.getTime();
+      if (byStart !== 0) return byStart;
+      const aLen = (a.end ?? a.start).getTime() - a.start.getTime();
+      const bLen = (b.end ?? b.start).getTime() - b.start.getTime();
+      return bLen - aLen;
+    });
+
+    const used = new Map<string, Set<number>>();
+    const map = new Map<string, EventSegment[]>();
+
+    for (const event of sorted) {
+      const first = startOfDay(event.start);
+      const last = new Date(
+        Math.max(
+          first.getTime(),
+          startOfDay(event.end ?? event.start).getTime(),
+        ),
       );
-      const last = event.end ?? event.start;
-      const stop = new Date(
-        last.getFullYear(),
-        last.getMonth(),
-        last.getDate(),
-      );
-      while (cursor <= stop) {
-        const key = toDayKey(cursor);
-        map.set(key, [...(map.get(key) ?? []), event]);
+      const days: Date[] = [];
+      const cursor = new Date(first);
+      while (cursor <= last) {
+        days.push(new Date(cursor));
         cursor.setDate(cursor.getDate() + 1);
       }
+
+      const keys = days.map(toDayKey);
+      let slot = 0;
+      while (keys.some((key) => used.get(key)?.has(slot))) slot++;
+
+      keys.forEach((key, i) => {
+        used.set(key, (used.get(key) ?? new Set<number>()).add(slot));
+        map.set(key, [
+          ...(map.get(key) ?? []),
+          {
+            event,
+            slot,
+            isStart: i === 0,
+            isEnd: i === days.length - 1,
+            showTitle: i === 0 || days[i].getDay() === weekStart,
+          },
+        ]);
+      });
     }
     return map;
-  }, [events]);
+  }, [events, props.weekStartsOn, locale]);
 
   return (
     <DayPicker
@@ -210,7 +240,7 @@ function AppCalendar({
         DayButton: ({ ...props }) => (
           <AppCalendarDayButton
             locale={locale}
-            events={eventsByDay.get(toDayKey(props.day.date)) ?? []}
+            segments={eventsByDay.get(toDayKey(props.day.date)) ?? []}
             {...props}
           />
         ),
@@ -252,12 +282,12 @@ function AppCalendarDayButton({
   day,
   modifiers,
   locale,
-  events = [],
+  segments = [],
   children,
   ...props
 }: React.ComponentProps<typeof DayButton> & {
   locale?: Partial<Locale>;
-  events?: CalendarEvent[];
+  segments?: EventSegment[];
 }) {
   const defaultClassNames = getDefaultClassNames();
 
@@ -265,6 +295,17 @@ function AppCalendarDayButton({
   React.useEffect(() => {
     if (modifiers.focused) ref.current?.focus();
   }, [modifiers.focused]);
+
+  const maxVisible = 3;
+  const lastSlot = segments.reduce((max, s) => Math.max(max, s.slot), -1);
+  const visibleSlots = Array.from(
+    { length: Math.min(lastSlot + 1, maxVisible) },
+    (_, i) => segments.find((s) => s.slot === i),
+  );
+  const hiddenCount = segments.filter((s) => s.slot >= maxVisible).length;
+  const dayEvents = [...segments]
+    .sort((a, b) => a.slot - b.slot)
+    .map((s) => s.event);
 
   return (
     <div className="relative flex size-full min-w-0 flex-col">
@@ -290,39 +331,44 @@ function AppCalendarDayButton({
       >
         {children}
       </Button>
-      {events.length > 0 && (
+      {segments.length > 0 && (
         <div className="pointer-events-none relative z-10 mt-9 flex min-h-0 w-full min-w-0 flex-col gap-0.5 px-1">
-          {events.slice(0, 3).map((event) => (
-            <Popover key={event.id}>
-              <PopoverTrigger
-                className="pointer-events-auto block w-full min-w-0 truncate rounded px-1.5 py-0.5 text-left text-xs text-white hover:cursor-pointer"
-                style={{ backgroundColor: event.color ?? "#3b82f6" }}
-              >
-                {event.title}
-              </PopoverTrigger>
-              <PopoverContent className="w-64">
-                <p className="font-medium">{event.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  {event.start.toLocaleString()}
-                </p>
-              </PopoverContent>
-            </Popover>
-          ))}
-          {events.length > 3 && (
+          {visibleSlots.map((segment, i) =>
+            segment ? (
+              <CalendarEventLabel
+                key={segment.event.id}
+                event={segment.event}
+                segment={segment}
+                locale={locale}
+                className="pointer-events-auto"
+              />
+            ) : (
+              <div key={`empty-${i}`} className="h-5" aria-hidden />
+            ),
+          )}
+          {hiddenCount > 0 && (
             <Popover>
               <PopoverTrigger className="pointer-events-auto px-1.5 text-left text-xs text-muted-foreground hover:cursor-pointer hover:text-foreground">
-                {events.length - 3} more
+                +{hiddenCount} more
               </PopoverTrigger>
-              <PopoverContent className="w-64 bg-background">
+              <PopoverContent className="w-64">
+                <div className="mb-2 flex flex-col items-center">
+                  <span className="text-xs font-medium uppercase text-muted-foreground">
+                    {day.date.toLocaleDateString(locale?.code, {
+                      weekday: "short",
+                    })}
+                  </span>
+                  <span className="text-2xl font-semibold">
+                    {day.date.getDate()}
+                  </span>
+                </div>
                 <div className="flex flex-col gap-1">
-                  {events.map((event) => (
-                    <div
+                  {dayEvents.map((event) => (
+                    <CalendarEventLabel
                       key={event.id}
-                      className="truncate rounded px-1.5 py-0.5 text-xs text-white"
-                      style={{ backgroundColor: event.color ?? "#3b82f6" }}
-                    >
-                      {event.title}
-                    </div>
+                      event={event}
+                      locale={locale}
+                    />
                   ))}
                 </div>
               </PopoverContent>
